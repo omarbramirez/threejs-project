@@ -13,12 +13,19 @@ const textures = {
   wood: textureLoader.load('models/kitchen/textures/brown-wood.jpg')
 };
 
+const colors = {
+  red: new THREE.Color(0xff4444),
+  blue: new THREE.Color(0x3366ff),
+};
+
+
 let model;
 const canvas = document.querySelector("canvas.threejs");
 const textureSelect = document.getElementById('texture-select');
+const colorSelect = document.getElementById('color-selector');
 
 // 🔹 Mapa para guardar las texturas originales del modelo
-const originalTextures = new Map();
+const originalProps = new Map();
 
 loader.load(
   'models/kitchen/scene.gltf',
@@ -29,7 +36,10 @@ loader.load(
     // Guardar las texturas originales de cada mesh
     model.traverse((child) => {
       if (child.isMesh && child.material) {
-        originalTextures.set(child.uuid, child.material.map);
+        originalProps.set(child.uuid, {
+          map: child.material.map,
+          color: child.material.color.clone(),
+        });
       }
     });
 
@@ -48,14 +58,43 @@ loader.load(
               break;
             default:
               // 🔁 Restaurar textura original guardada
-              const original = originalTextures.get(child.uuid);
-              child.material.map = original || null;
+              const original = originalProps.get(child.uuid);
+              child.material.map = original.map || null;
               break;
           }
           child.material.needsUpdate = true;
         }
       });
     });
+
+
+    colorSelect.addEventListener("change", (e) => {
+      const selected = e.target.value;
+
+      model.traverse((child) => {
+        if (child.isMesh && child.material) {
+          switch (selected) {
+            case "red":
+              child.material.color = colors.red.clone();
+              break;
+            case "blue":
+              child.material.color = colors.blue.clone();
+              break;
+            default:
+              // Restaurar color original
+              const original = originalProps.get(child.uuid);
+              if (original && original.color) {
+                child.material.color.copy(original.color);
+              }
+              break;
+          }
+          child.material.needsUpdate = true;
+        }
+      })
+    })
+
+
+
   },
   (xhr) => console.log((xhr.loaded / xhr.total * 100) + '% loaded'),
   (error) => console.error('An error happened:', error)

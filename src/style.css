@@ -4,3 +4,28 @@ body {
     overflow: hidden;
   }
   
+#texture-selector {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  background: rgba(255,255,255,0.8);
+  color: #333;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: sans-serif;
+  backdrop-filter: blur(6px);
+}
+
+label {
+  font-family: sans-serif;
+  font-size: 1rem;
+  padding-right: 10px;
+  background: none;
+}
+
+select {
+  font-size: 0.9rem;
+  padding: 2px 5px;
+  background: none;
+  backdrop-filter: blur(6px);
+}
